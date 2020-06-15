@@ -44,14 +44,14 @@ class CairoRenderer:
 
     # -------DOCUMENT RENDERING
 
-    def render(self, ctx, objs=[]):
+    def render(self, ctx, objs=None):
 
         if self.antialias_flag:
             ctx.set_antialias(cairo.ANTIALIAS_DEFAULT)
         else:
             ctx.set_antialias(cairo.ANTIALIAS_NONE)
 
-        if objs:
+        if objs is not None:
             for obj in objs:
                 self.render_object(ctx, obj)
 

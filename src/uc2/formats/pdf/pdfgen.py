@@ -22,7 +22,7 @@ from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase.pdfdoc import PDFInfo, PDFString, PDFDate, PDFDictionary
 from reportlab.pdfgen.canvas import Canvas, FILL_EVEN_ODD, FILL_NON_ZERO
 
-from pdfconst import PDF_VERSION_DEFAULT
+from .pdfconst import PDF_VERSION_DEFAULT
 from uc2 import _, uc2const, events
 from uc2 import libgeom, libcairo, sk2const
 from uc2.formats.sk2 import sk2_model

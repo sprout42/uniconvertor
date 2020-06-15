@@ -42,8 +42,8 @@ def config_logging(filepath, level='INFO'):
         format=' %(levelname)-8s | %(asctime)s | %(name)s --> %(message)s',
         datefmt='%I:%M:%S %p',
         level=level,
-        filename=filepath,
-        filemode='w',
+        #filename=filepath,
+        #filemode='w',
         stream=sys.stderr,
     )
 

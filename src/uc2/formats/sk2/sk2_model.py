@@ -20,7 +20,7 @@ import math
 from base64 import b64decode, b64encode
 from copy import deepcopy
 
-from sk2_cids import *
+from . sk2_cids import *
 from uc2 import _, cms, uc2const, libgeom, sk2const
 from uc2.formats.generic import TextModelObject
 from uc2.libimg.handlers import EditableImageHandler
@@ -528,7 +528,7 @@ class PrimitiveObject(SelectableObject):
     cache_arrows = None
 
     def get_initial_paths(self):
-        pass
+        raise NotImplementedError('base class')
 
     def destroy(self):
         if self.cache_cpath is not None:
@@ -537,13 +537,19 @@ class PrimitiveObject(SelectableObject):
 
     def to_curve(self):
         curve = Curve(self.config)
-        curve.paths = deepcopy(self.paths if self.is_curve
-                               else self.cache_paths)
-        curve.trafo = [] + self.trafo
-        curve.fill_trafo = [] + self.fill_trafo
-        curve.stroke_trafo = [] + self.stroke_trafo
+
+        if self.is_curve:
+            curve.paths = deepcopy(self.paths)
+        else:
+            curve.paths = deepcopy(self.cache_paths)
+
+        curve.trafo = deepcopy(self.trafo)
         curve.style = deepcopy(self.style)
+        curve.fill_trafo = deepcopy(self.fill_trafo)
+        curve.stroke_trafo = deepcopy(self.stroke_trafo)
+
         curve.update()
+
         return curve
 
     def update(self):
@@ -625,18 +631,30 @@ class Rectangle(PrimitiveObject):
     is_rect = True
 
     def __init__(self, config, parent=None,
-                 rect=[] + sk2const.STUB_RECT,
-                 trafo=[] + sk2const.NORMAL_TRAFO,
-                 style=[] + sk2const.EMPTY_STYLE,
-                 corners=[] + sk2const.CORNERS,
-                 ):
+            rect=None, trafo=None, style=None, corners=None):
         self.cid = RECTANGLE
         self.parent = parent
         self.config = config
-        self.set_rect(rect)
-        self.trafo = trafo
-        self.corners = corners
-        self.style = style
+
+        if rect is not None:
+            self.set_rect(rect)
+        else:
+            self.set_rect(sk2const.STUB_RECT)
+
+        if trafo is not None:
+            self.trafo = trafo
+        else:
+            self.trafo = sk2const.NORMAL_TRAFO
+
+        if corners is not None:
+            self.corners = corners
+        else:
+            self.corners= sk2const.CORNERS
+
+        if style is not None:
+            self.style = style
+        else:
+            self.style = sk2const.EMPTY_STYLE
 
     def get_rect(self):
         return self.start + [self.width, self.height]
@@ -650,8 +668,9 @@ class Rectangle(PrimitiveObject):
         return True
 
     def get_initial_paths(self):
-        return libgeom.get_rect_paths(self.start, self.width,
+        val = libgeom.get_rect_paths(self.start, self.width,
                                       self.height, self.corners)
+        return val
 
     def get_corner_points(self):
         c0 = [] + self.start
@@ -707,21 +726,29 @@ class Circle(PrimitiveObject):
     is_circle = True
 
     def __init__(self, config, parent=None,
-                 rect=[] + sk2const.STUB_RECT,
+                 rect=None,
                  angle1=0.0,
                  angle2=0.0,
                  circle_type=sk2const.ARC_CHORD,
-                 style=[] + sk2const.EMPTY_STYLE,
+                 style=None,
                  ):
         self.cid = CIRCLE
         self.parent = parent
         self.config = config
         self.angle1 = angle1
         self.angle2 = angle2
+
+        if rect is None:
+            rect = sk2const.STUB_RECT
         self.trafo = [rect[2], 0.0, 0.0, rect[3], rect[0], rect[1]]
+
         self.initial_trafo = [] + self.trafo
         self.circle_type = circle_type
-        self.style = style
+
+        if style is not None:
+            self.style = style
+        else:
+            self.style = sk2const.EMPTY_STYLE
 
     def is_closed(self):
         return self.circle_type != sk2const.ARC_ARC
@@ -756,13 +783,13 @@ class Polygon(PrimitiveObject):
     is_polygon = True
 
     def __init__(self, config, parent=None,
-                 rect=[] + sk2const.STUB_RECT,
+                 rect=None,
                  angle1=0.0,
                  angle2=0.0,
                  coef1=1.0,
                  coef2=1.0,
                  corners_num=0,
-                 style=[] + sk2const.EMPTY_STYLE,
+                 style=None,
                  ):
         self.cid = POLYGON
         self.parent = parent
@@ -774,9 +801,15 @@ class Polygon(PrimitiveObject):
         self.angle2 = angle2
         self.coef1 = coef1
         self.coef2 = coef2
+        if rect is None:
+            rect = sk2const.STUB_RECT
         self.trafo = [rect[2], 0.0, 0.0, rect[3], rect[0], rect[1]]
         self.initial_trafo = [] + self.trafo
-        self.style = style
+
+        if style is not None:
+            self.style = style
+        else:
+            self.style = sk2const.EMPTY_STYLE
 
     def is_closed(self):
         return True
@@ -833,15 +866,21 @@ class Curve(PrimitiveObject):
     paths = []
     is_curve = True
 
-    def __init__(self, config, parent=None,
-                 paths=[] + sk2const.STUB_PATHS,
-                 trafo=[] + sk2const.NORMAL_TRAFO,
-                 style=[] + sk2const.EMPTY_STYLE):
+    def __init__(self, config, parent=None, paths=None, trafo=None, style=None):
         self.cid = CURVE
         self.config = config
         self.parent = parent
+
+        if paths is None:
+            paths = sk2const.STUB_PATHS
         self.paths = paths
+
+        if trafo is None:
+            trafo = sk2const.NORMAL_TRAFO
         self.trafo = trafo
+
+        if style is None:
+            self.style = sk2const.EMPTY_STYLE
         self.style = style
 
     def get_initial_paths(self):
@@ -961,17 +1000,26 @@ class Text(PrimitiveObject):
                  point=None,
                  text="",
                  width=sk2const.TEXTBLOCK_WIDTH,
-                 trafo=[] + sk2const.NORMAL_TRAFO,
-                 style=[] + sk2const.EMPTY_STYLE):
+                 trafo=None,
+                 style=None):
 
         point = point or [0.0, 0.0]
         self.config = config
         self.parent = parent
         self.text = b64encode(text)
         self.width = width
+
+        if trafo is None:
+            trafo = sk2const.NORMAL_TRAFO
+
         self.trafo = trafo[:4] + [trafo[4] + point[0], trafo[5] + point[1]]
         self.initial_trafo = [] + self.trafo
-        self.style = style
+
+        if style is not None:
+            self.style = style
+        else:
+            self.style = sk2const.EMPTY_STYLE
+
         self.markup = []
         self.trafos = {}
 
@@ -1151,14 +1199,20 @@ class Pixmap(PrimitiveObject):
     def __init__(self, config, parent=None,
                  bitmap=None,
                  alpha_channel=None,
-                 trafo=[] + sk2const.NORMAL_TRAFO,
-                 style=[] + sk2const.EMPTY_STYLE):
+                 trafo=None,
+                 style=None):
         self.cid = PIXMAP
         self.config = config
         self.parent = parent
         self.handler = EditableImageHandler(self)
         self.handler.set_images_from_str(bitmap, alpha_channel)
+
+        if trafo is None:
+            trafo = sk2const.NORMAL_TRAFO
         self.trafo = trafo
+
+        if style is None:
+            style = sk2const.EMPTY_STYLE
         self.style = style
 
     @property

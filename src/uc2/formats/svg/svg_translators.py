@@ -390,8 +390,8 @@ class SVG_to_SK2_Translator(object):
                     code = compile('dash=[' + style['stroke-dasharray'] + ']',
                                    '<string>', 'exec')
                     exec(code)
-                except Exception:
-                    dash = []
+                except Exception as e:
+                    LOG.error(e, exc_info=True)
             if dash:
                 sk2_dash = []
                 for item in dash:
@@ -620,7 +620,7 @@ class SVG_to_SK2_Translator(object):
                      repr(svg_obj), svg_obj.tag)
             if 'id' in svg_obj.attrs:
                 LOG.warn('Object id: %s', svg_obj.attrs['id'])
-            LOG.warn('Error traceback: %s', e)
+            LOG.error(e, exc_info=True)
 
     def translate_defs(self, svg_obj):
         for item in svg_obj.childs:
@@ -762,7 +762,8 @@ class SVG_to_SK2_Translator(object):
                 if 'stroke-grad-trafo' in self.style_opts:
                     tr0 = self.style_opts['stroke-grad-trafo']
                     curve.fill_trafo = libgeom.multiply_trafo(tr0, trafo)
-            except Exception:
+            except Exception as e:
+                LOG.error(e, exc_info=True)
                 if 'stroke-fill-color' in self.style_opts:
                     obj.style[1][2] = self.style_opts['stroke-fill-color']
                 else:
@@ -1209,7 +1210,7 @@ class SK2_to_SVG_Translator(object):
     def translate_group(self, dest_parent, source_obj):
         if source_obj.is_container:
             clip = source_obj.childs[0]
-            clip_id = self.make_clippath(clip)
+            clip_id = self.make_clippath(clip, source_obj)
 
             if clip.style[1] and clip.style[1][7]:
                 stroke_obj = clip.copy()

@@ -78,13 +78,14 @@ class ResourceManager:
             ret = res_dict[id]
         return ret
 
-    def copy_resources(self, rm, resources=[]):
+    def copy_resources(self, rm, resources=None):
         """
         Copies resources from other resource manager storing the same id.
         resources - list of ids
         """
-        for id in resources:
-            self.copy_resource(rm, id)
+        if resources is not None:
+            for id in resources:
+                self.copy_resource(rm, id)
 
     def copy_resource(self, rm, id):
         """
@@ -97,14 +98,15 @@ class ResourceManager:
             place = rm.get_resource(id).split('/')[0]
             self.registry_file(filepath, place, id)
 
-    def delete_resources(self, resources=[], rmfile=False):
+    def delete_resources(self, resources=None, rmfile=False):
         """
         Removes list of ids from resources.
         If rmfile flag is true removes files physically.
         resources - list of ids
         """
-        for id in resources:
-            self.delete_resource(id, rmfile)
+        if resources is not None:
+            for id in resources:
+                self.delete_resource(id, rmfile)
 
     def delete_resource(self, id, rmfile=False):
         """

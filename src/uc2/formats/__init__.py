@@ -19,7 +19,7 @@ import logging
 import os
 from importlib import import_module
 
-from fallback import fallback_check, im_loader
+from .fallback import fallback_check, im_loader
 from uc2 import events, msgconst
 from uc2 import uc2const
 from uc2.utils import fsutils
@@ -44,7 +44,8 @@ def _get_loader(pid):
         loader_mod = import_module('uc2.formats.' + pid)
         loader = getattr(loader_mod, pid + '_loader')
     except Exception as e:
-        LOG.error('Error accessing <%s> loader %s', pid, e)
+        LOG.error('Error accessing <%s> loader' % pid)
+        LOG.error(e, exc_info=True)
     LOADERS[pid] = loader
     return loader
 
@@ -59,7 +60,8 @@ def _get_saver(pid):
         saver_mod = import_module('uc2.formats.' + pid)
         saver = getattr(saver_mod, pid + '_saver')
     except Exception as e:
-        LOG.error('Error accessing <%s> saver %s', pid, e)
+        LOG.error('Error accessing <%s> saver' % pid)
+        LOG.error(e, exc_info=True)
     SAVERS[pid] = saver
     return saver
 
@@ -76,7 +78,8 @@ def _get_checker(pid):
         checker_mod = import_module('uc2.formats.' + pid)
         checker = getattr(checker_mod, 'check_' + pid)
     except Exception as e:
-        LOG.error('Error accessing <%s> checker %s', pid, e)
+        LOG.error('Error accessing <%s> checker' % pid)
+        LOG.error(e, exc_info=True)
     CHECKERS[pid] = checker
     return checker
 

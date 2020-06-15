@@ -126,10 +126,12 @@ class AbstractBinaryLoader(AbstractLoader):
         return utils.pair_dword2py_int(self.fileptr.read(8))
 
     def readstr(self, size):
-        return utils.latin1_bytes_2str(self.fileptr.read(size))
+        #return utils.latin1_bytes_2str(self.fileptr.read(size))
+        return self.fileptr.read(size).decode('utf-8')
 
     def readustr(self, size):
-        return utils.utf_16_le_bytes_2str(self.fileptr.read(size * 2))
+        #return utils.utf_16_le_bytes_2str(self.fileptr.read(size * 2))
+        return self.fileptr.read(size * 2).decode('utf-16-le')
 
 
 class AbstractXMLLoader(AbstractLoader, handler.ContentHandler):
@@ -219,16 +221,26 @@ class AbstractSaver(object):
         pass
 
     def writeln(self, line=''):
-        self.fileptr.write(line + '\n')
+        if isinstance(line, str):
+            line += '\n'
+            self.fileptr.write(line.encode())
+        elif isinstance(line, bytes):
+            self.fileptr.write(line + b'\n')
 
     def write(self, data):
-        self.fileptr.write(data)
+        if isinstance(data, str):
+            self.fileptr.write(data.encode())
+        else:
+            self.fileptr.write(data)
 
     def field_to_str(self, val):
         val_str = val.__str__()
         if isinstance(val, str):
             val_str = val_str.replace("\n", " ").replace("\r", " ")
             val_str = "'%s'" % val_str.replace("'", "\\'")
+        elif isinstance(val, bytes):
+            val_str = val_str.replace(b"\n", b" ").replace(b"\r", b" ")
+            val_str = b"'%s'" % val_str.replace(b"'", b"\\'")
         return val_str
 
     def send_progress_message(self, msg, val):

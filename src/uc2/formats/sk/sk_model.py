@@ -774,8 +774,10 @@ class SKPolyBezier(SKModelObject):
 
     is_Bezier = 1
 
-    def __init__(self, paths_list=[], properties=None):
+    def __init__(self, paths_list=None, properties=None):
         self.properties = properties
+        if paths_list is None:
+            paths_list = []
         self.paths_list = paths_list
         SKModelObject.__init__(self)
 

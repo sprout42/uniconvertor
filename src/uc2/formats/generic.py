@@ -202,8 +202,8 @@ class ModelPresenter(object):
         if self.model is not None:
             self.model.destroy()
         self.model = None
-        filename = filename.encode('utf-8') \
-            if isinstance(filename, unicode) else filename
+        #filename = filename.encode('utf-8') \
+        #    if isinstance(filename, unicode) else filename
         model_name = uc2const.FORMAT_NAMES[self.cid]
         self.send_ok(_('<%s> document model is destroyed for %s') %
                      (model_name, filename))

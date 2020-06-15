@@ -26,6 +26,9 @@ from uc2.formats.sk2.sk2_presenter import SK2_Presenter
 from uc2.utils.fsutils import get_fileptr
 from uc2.utils.mixutils import merge_cnf
 
+import logging
+LOG = logging.getLogger(__name__)
+
 
 def cgm_loader(appdata, filename=None, fileptr=None,
                translate=True, cnf=None, **kw):

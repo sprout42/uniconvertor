@@ -47,7 +47,10 @@ def byte2py_int(data):
     """
     Converts byte to Python int value.
     """
-    return struct.unpack('B', data)[0]
+    if isinstance(data, int) and data > 0 and data < 256:
+        return data
+    else:
+        return struct.unpack('B', data)[0]
 
 
 def py_int2byte(val):
@@ -159,22 +162,22 @@ def long2py_float(data):
     return struct.unpack('<l', data)[0]
 
 
-def latin1_bytes_2str(data):
-    """
-    Converts Latin1 bytes to Python string value.
-    """
-    length = len(data)
-    return unicode(struct.unpack(str(length) + 's', data)[0], 'latin1'). \
-        encode('utf-8')
-
-
-def utf_16_le_bytes_2str(data):
-    """
-    Converts utf16 bytes to Python string value.
-    """
-    length = len(data)
-    return unicode(struct.unpack(str(length) + 's', data)[0], 'utf_16_le'). \
-        encode('utf-8')
+#def latin1_bytes_2str(data):
+#    """
+#    Converts Latin1 bytes to Python string value.
+#    """
+#    length = len(data)
+#    return unicode(struct.unpack(str(length) + 's', data)[0], 'latin1'). \
+#        encode('utf-8')
+#
+#
+#def utf_16_le_bytes_2str(data):
+#    """
+#    Converts utf16 bytes to Python string value.
+#    """
+#    length = len(data)
+#    return unicode(struct.unpack(str(length) + 's', data)[0], 'utf_16_le'). \
+#        encode('utf-8')
 
 
 def get_chunk_size(size_field):

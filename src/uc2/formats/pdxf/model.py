@@ -436,9 +436,11 @@ class Group(SelectableObject):
     cid = GROUP
     childs = []
 
-    def __init__(self, config, parent=None, childs=[]):
+    def __init__(self, config, parent=None, childs=None):
         self.cid = GROUP
-        self.childs = []
+        if childs is None:
+            childs = []
+        self.childs = childs
         self.config = config
         self.parent = parent
         self.childs += childs
@@ -488,9 +490,11 @@ class Container(Group):
     cid = CONTAINER
     cache_container = None
 
-    def __init__(self, config, parent=None, childs=[]):
+    def __init__(self, config, parent=None, childs=None):
         self.cid = CONTAINER
-        self.childs = []
+        if childs is None:
+            childs = []
+        self.childs = childs
         self.config = config
         self.parent = parent
         self.childs += childs
@@ -576,19 +580,27 @@ class Rectangle(PrimitiveObject):
     corners = []
 
     def __init__(self, config, parent=None,
-                 rect=[] + const.STUB_RECT,
-                 trafo=[] + const.NORMAL_TRAFO,
-                 style=[] + const.EMPTY_STYLE,
-                 corners=[] + const.CORNERS,
+                 rect=None,
+                 trafo=None,
+                 style=None,
+                 corners=None,
                  ):
         self.cid = RECTANGLE
         self.parent = parent
         self.config = config
+        if rect is None:
+            rect = const.STUB_RECT
         self.start = [rect[0], rect[1]]
         self.width = rect[2]
         self.height = rect[3]
+        if trafo is None:
+            trafo = const.NORMAL_TRAFO
         self.trafo = trafo
+        if corners is None:
+            corners = const.CORNERS
         self.corners = corners
+        if style is None:
+            style = const.EMPTY_STYLE
         self.style = style
 
     def copy(self):
@@ -614,20 +626,24 @@ class Circle(PrimitiveObject):
     initial_trafo = const.NORMAL_TRAFO
 
     def __init__(self, config, parent=None,
-                 rect=[] + const.STUB_RECT,
+                 rect=None,
                  angle1=0.0,
                  angle2=0.0,
                  circle_type=const.ARC_CHORD,
-                 style=[] + const.EMPTY_STYLE,
+                 style=None,
                  ):
         self.cid = CIRCLE
         self.parent = parent
         self.config = config
         self.angle1 = angle1
         self.angle2 = angle2
+        if rect is None:
+            rect = const.STUB_RECT
         self.trafo = [rect[2], 0.0, 0.0, rect[3], rect[0], rect[1]]
         self.initial_trafo = [] + self.trafo
         self.circle_type = circle_type
+        if style is None:
+            style = const.EMPTY_STYLE
         self.style = style
 
     def copy(self):
@@ -656,13 +672,13 @@ class Polygon(PrimitiveObject):
     initial_trafo = const.NORMAL_TRAFO
 
     def __init__(self, config, parent=None,
-                 rect=[] + const.STUB_RECT,
+                 rect=None,
                  angel1=0.0,
                  angel2=0.0,
                  coef1=1.0,
                  coef2=1.0,
                  corners_num=0,
-                 style=[] + const.EMPTY_STYLE,
+                 style=None,
                  ):
         self.cid = POLYGON
         self.parent = parent
@@ -674,8 +690,12 @@ class Polygon(PrimitiveObject):
         self.angle2 = angel2
         self.coef1 = coef1
         self.coef2 = coef2
+        if rect is None:
+            rect = const.STUB_RECT
         self.trafo = [rect[2], 0.0, 0.0, rect[3], rect[0], rect[1]]
         self.initial_trafo = [] + self.trafo
+        if style is None:
+            style = const.EMPTY_STYLE
         self.style = style
 
     def copy(self):
@@ -701,14 +721,20 @@ class Curve(PrimitiveObject):
     paths = []
 
     def __init__(self, config, parent=None,
-                 paths=[] + const.STUB_PATHS,
-                 trafo=[] + const.NORMAL_TRAFO,
-                 style=[] + const.EMPTY_STYLE):
+                 paths=None,
+                 trafo=None,
+                 style=None):
         self.cid = CURVE
         self.config = config
         self.parent = parent
+        if paths is None:
+            paths = const.STUB_PATHS
         self.paths = paths
+        if trafo is None:
+            trafo = const.STUB_PATHS
         self.trafo = trafo
+        if style is None:
+            style = const.STUB_PATHS
         self.style = style
 
     def copy(self):
@@ -731,11 +757,11 @@ class Text(PrimitiveObject):
     attributes = []
 
     def __init__(self, config, parent=None,
-                 rect=[] + const.STUB_RECT,
+                 rect=None,
                  text="",
                  width=const.TEXTBLOCK_WIDTH,
-                 trafo=[] + const.NORMAL_TRAFO,
-                 style=[] + const.EMPTY_STYLE):
+                 trafo=None,
+                 style=None):
 
         if width == const.TEXTBLOCK_WIDTH:
             self.cid = TEXT_BLOCK
@@ -746,10 +772,16 @@ class Text(PrimitiveObject):
         self.text = text
         if not text:
             self.text = config.default_text
+        if trafo is None:
+            trafo = const.NORMAL_TRAFO
         self.trafo = trafo
         self.width = width
+        if rect is None:
+            rect = const.STUB_RECT
         self.trafo[4] = rect[0]
         self.trafo[5] = rect[1] + rect[3]
+        if style is None:
+            style = const.EMPTY_STYLE
         self.style = style
         self.attributes = []
 

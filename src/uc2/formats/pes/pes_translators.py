@@ -120,7 +120,7 @@ class PEC_to_SK2_Translator(object):
                 parent=None,
                 style=self.get_style(),
                 paths=[[path[0], path[1:], sk2const.CURVE_OPENED]],
-                trafo=[] + pes_const.PES_to_SK2_TRAFO
+                trafo=pes_const.PES_to_SK2_TRAFO
             )
             methods.append_object(curve, self.layer)
             self.processor.stitch_list = []

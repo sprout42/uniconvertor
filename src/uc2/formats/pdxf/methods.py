@@ -42,8 +42,8 @@ def create_new_doc(config):
     return doc
 
 
-def add_childs(parent, childs=[]):
-    if childs:
+def add_childs(parent, childs=None):
+    if childs is not None:
         for child in childs:
             parent.childs.append(child)
             child.parent = parent
@@ -111,9 +111,9 @@ class PDXF_Methods:
     def set_page_format(self, page, page_format):
         page.page_format = page_format
 
-    def add_page(self, page_format=[]):
+    def add_page(self, page_format=None):
         parent = self.model.childs[0]
-        if page_format:
+        if page_format is not None:
             page = model.Page(self.config)
             page.page_format = deepcopy(page_format)
         else:
@@ -123,9 +123,9 @@ class PDXF_Methods:
         page.name = _('Page') + ' %i' % (parent.page_counter)
         return page
 
-    def insert_page(self, index=0, page_format=[]):
+    def insert_page(self, index=0, page_format=None):
         parent = self.model.childs[0]
-        if page_format:
+        if page_format is not None:
             page = model.Page(self.config)
             page.page_format = deepcopy(page_format)
         else:

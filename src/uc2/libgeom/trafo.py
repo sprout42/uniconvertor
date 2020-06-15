@@ -64,7 +64,10 @@ def apply_trafo_to_path(path, trafo):
 
 
 def apply_trafo_to_paths(paths, trafo):
-    return [apply_trafo_to_path(path, trafo) for path in paths]
+    if paths is not None:
+        return [apply_trafo_to_path(path, trafo) for path in paths]
+    else:
+        return []
 
 
 def apply_trafo_to_bbox(bbox, trafo):

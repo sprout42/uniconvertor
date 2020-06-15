@@ -294,7 +294,7 @@ class CGM_to_SK2_Translator(object):
     # 0x1040
     def _metafile_description(self, element):
         if self.sk2_model.metainfo[3]:
-            self.sk2_model.metainfo[3] += '\n\n'
+            self.sk2_model.metainfo[3] += b'\n\n'
         self.sk2_model.metainfo[3] += self.read_str(element.params)[0]
 
     # 0x1060
@@ -314,7 +314,7 @@ class CGM_to_SK2_Translator(object):
         bits = self.read_int(element.params)[0]
         if bits not in (8, 16, 24, 32):
             raise Exception('Unsupported %d-bit integer precision' % bits)
-        self.cgm['intsize'] = bits / 8
+        self.cgm['intsize'] = bits // 8
         self.cgm['intprec'] = self.cgm['intsize'] - 1
 
     # 0x10a0
@@ -333,7 +333,7 @@ class CGM_to_SK2_Translator(object):
         bits = self.read_int(element.params)[0]
         if bits not in (8, 16, 24, 32):
             raise Exception('Unsupported %d-bit index precision' % bits)
-        self.cgm['inxsize'] = bits / 8
+        self.cgm['inxsize'] = bits // 8
         self.cgm['inxprec'] = self.cgm['inxsize'] - 1
 
     # 0x10e0
@@ -416,7 +416,7 @@ class CGM_to_SK2_Translator(object):
     def _vdc_integer_precision(self, element):
         bit_depth = self.read_int(element.params)[0]
         if bit_depth in (8, 16, 24, 32):
-            self.cgm['vdc.intsize'] = bit_depth / 8
+            self.cgm['vdc.intsize'] = bit_depth // 8
             self.cgm['vdc.intprec'] = self.cgm['vdc.intsize'] - 1
             if self.cgm['vdc.type'] == 0:
                 self.cgm['vdc.size'] = self.cgm['vdc.intsize']
@@ -748,5 +748,5 @@ class CGM_to_SK2_Translator(object):
     # 0x7040
     def _application_data(self, element):
         if self.sk2_model.metainfo[3]:
-            self.sk2_model.metainfo[3] += '\n\n'
+            self.sk2_model.metainfo[3] += b'\n\n'
         self.sk2_model.metainfo[3] += self.read_str(element.params[2:])[0]

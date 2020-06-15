@@ -296,5 +296,5 @@ class CMX_to_SK2_Translator(object):
         if paths:
             style = self.get_v1_style(el)
             curve = sk2_model.Curve(self.sk2_model.config, paths=paths,
-                                    trafo=[] + self.trafo, style=style)
+                                    trafo=self.trafo, style=style)
         return curve

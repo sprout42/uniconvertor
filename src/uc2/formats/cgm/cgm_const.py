@@ -423,8 +423,8 @@ def create_color_table(sz):
     while mx < sz:
         mx = mx * 2
         bs = bs + 1
-    cb = bs / 3
-    tb = bs % 3
+    cb = bs // 3
+    tb = int(bs % 3)
     mc = (1 << (cb + tb)) - 1.0
     table = mx * [(0.0, 0.0, 0.0)]
     for i in range(mx):

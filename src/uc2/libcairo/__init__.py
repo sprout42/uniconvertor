@@ -24,6 +24,10 @@ except ModuleNotFoundError:
 from uc2 import uc2const
 from . import _libcairo
 
+import logging
+LOG = logging.getLogger(__name__)
+
+
 SURFACE = cairo.ImageSurface(cairo.FORMAT_RGB24, 1, 1)
 CTX = cairo.Context(SURFACE)
 DIRECT_MATRIX = cairo.Matrix()
@@ -37,21 +41,22 @@ def get_version():
 def create_cpath(paths, cmatrix=None):
     CTX.set_matrix(DIRECT_MATRIX)
     CTX.new_path()
-    for path in paths:
-        CTX.new_sub_path()
-        start_point = path[0]
-        points = path[1]
-        end = path[2]
-        CTX.move_to(*start_point)
+    if paths is not None:
+        for path in paths:
+            CTX.new_sub_path()
+            start_point = path[0]
+            points = path[1]
+            end = path[2]
+            CTX.move_to(*start_point)
 
-        for point in points:
-            if len(point) == 2:
-                CTX.line_to(*point)
-            else:
-                p1, p2, p3 = point[:-1]
-                CTX.curve_to(*(p1 + p2 + p3))
-        if end:
-            CTX.close_path()
+            for point in points:
+                if len(point) == 2:
+                    CTX.line_to(*point)
+                else:
+                    p1, p2, p3 = point[:-1]
+                    CTX.curve_to(*(p1 + p2 + p3))
+            if end:
+                CTX.close_path()
 
     cairo_path = CTX.copy_path()
     if cmatrix is not None:

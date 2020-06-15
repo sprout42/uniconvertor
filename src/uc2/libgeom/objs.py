@@ -18,8 +18,8 @@
 import math
 from copy import deepcopy
 
-from bezier_ops import split_bezier_curve, bezier_base_point
-from points import rotate_point
+from .bezier_ops import split_bezier_curve, bezier_base_point
+from .points import rotate_point
 from uc2 import libpango, libcairo, sk2const
 
 

@@ -139,7 +139,7 @@ class XMLPrefReader(handler.ContentHandler):
             try:
                 line = path_system('self.value=' + self.value)
                 code = compile(line, '<string>', 'exec')
-                exec code
+                exec(code)
                 self.pref.__dict__[self.key] = self.value
             except Exception as e:
                 LOG.error('Error in "%s" %s', line, e)

@@ -3,7 +3,7 @@ install-base=$APP_INSTALL_PATH
 install-lib=$APP_INSTALL_PATH
 install-purelib=$APP_INSTALL_PATH
 install-platlib=$APP_INSTALL_PATH
-install-scripts=/usr/bin
+install-scripts=$APP_SCRIPT_INSTALL_PATH
 install-data=$APP_INSTALL_PATH
 install-headers=$APP_INSTALL_PATH
 

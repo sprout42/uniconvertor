@@ -30,8 +30,23 @@ PyMethodDef libtrace_methods[] = {
 	{NULL, NULL}
 };
 
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef tracedef = {
+    PyModuleDef_HEAD_INIT,
+    "_libtrace",         /* m_name */
+    NULL,                /* m_doc */
+    -1,                  /* m_size */
+    libtrace_methods,    /* m_methods */
+};
+
+PyMODINIT_FUNC
+PyInit__libtrace(void) {
+    return PyModule_Create(&tracedef);
+}
+#else
 void
 init_libtrace(void)
 {
     Py_InitModule("_libtrace", libtrace_methods);
 }
+#endif

@@ -9,3 +9,5 @@
 /.idea
 .vagrant
 /utils
+/build
+/subproj

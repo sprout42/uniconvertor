@@ -29,9 +29,9 @@ _ = translator.MsgTranslator()
 def uc2_init():
     """UniConvertor initializing routine."""
 
-    _pkgdir = __path__[0].decode(sys.getfilesystemencoding()).encode('utf-8')
+    _pkgdir = __path__[0]
 
-    from application import UCApplication
+    from .application import UCApplication
 
     app = UCApplication(_pkgdir)
     return app

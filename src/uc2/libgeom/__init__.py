@@ -15,16 +15,16 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from bbox import *
-from bezier_ops import *
-from contour import stroke_to_curve
-from cwrap import *
-from flattering import get_flattened_paths, flat_paths, flat_path
-from objs import *
-from points import *
-from shaping import intersect_paths, fuse_paths, trim_paths, excluse_paths
-from text_on_path import set_text_on_path
-from trafo import *
+from .bbox import *
+from .bezier_ops import *
+from .contour import stroke_to_curve
+from .cwrap import *
+from .flattering import get_flattened_paths, flat_paths, flat_path
+from .objs import *
+from .points import *
+from .shaping import intersect_paths, fuse_paths, trim_paths, excluse_paths
+from .text_on_path import set_text_on_path
+from .trafo import *
 
 """
 Package provides basic routines for Bezier curves.

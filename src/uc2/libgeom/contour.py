@@ -19,9 +19,9 @@ import math
 from copy import deepcopy
 
 from uc2 import sk2const
-from points import distance, mult_point, add_points, sub_points, midpoint
-from bezier_ops import bezier_base_point
-from shaping import fuse_paths, intersect_lines, intersect_segments, dash_path
+from .points import distance, mult_point, add_points, sub_points, midpoint
+from .bezier_ops import bezier_base_point
+from .shaping import fuse_paths, intersect_lines, intersect_segments, dash_path
 
 # This constant is used to calculate the length of the bezier
 # tangents to approximate a circle.

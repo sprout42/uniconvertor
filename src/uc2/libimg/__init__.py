@@ -18,7 +18,10 @@
 import cairo
 import logging
 from base64 import b64encode
-from cStringIO import StringIO
+try:
+    from cStringIO import StringIO
+except ModuleNotFoundError:
+    from io import StringIO
 
 from PIL import Image
 

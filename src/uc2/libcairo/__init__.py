@@ -16,10 +16,13 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import cairo
-from cStringIO import StringIO
+try:
+    from cStringIO import StringIO
+except ModuleNotFoundError:
+    from io import StringIO
 
 from uc2 import uc2const
-import _libcairo
+from . import _libcairo
 
 SURFACE = cairo.ImageSurface(cairo.FORMAT_RGB24, 1, 1)
 CTX = cairo.Context(SURFACE)

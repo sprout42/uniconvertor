@@ -19,9 +19,9 @@ from copy import deepcopy
 
 from uc2 import sk2const
 
-from flattering import flat_path
-from points import distance, mult_point, add_points
-from cwrap import get_cpath_bbox, create_cpath
+from .flattering import flat_path
+from .points import distance, mult_point, add_points
+from .cwrap import get_cpath_bbox, create_cpath
 
 
 def is_curve_point(point):

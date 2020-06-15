@@ -18,7 +18,10 @@
 import os
 from PIL import Image
 from base64 import b64decode, b64encode
-from cStringIO import StringIO
+try:
+    from cStringIO import StringIO
+except ModuleNotFoundError:
+    from io import StringIO
 from copy import deepcopy
 
 from uc2 import _, uc2const

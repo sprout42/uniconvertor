@@ -22,9 +22,9 @@ from copy import deepcopy
 
 from uc2 import libcairo
 
-import core
-from core import NONPRINTING_CHARS
-from langs import check_maynmar, check_arabic
+from . import core
+from .core import NONPRINTING_CHARS
+from .langs import check_maynmar, check_arabic
 
 
 def cluster_text(text, clusters):

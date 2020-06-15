@@ -20,10 +20,10 @@ import cairo
 import math
 from copy import deepcopy
 
-from bbox import is_bbox_overlap, sum_bbox
-from bezier_ops import bezier_base_point, get_paths_bbox
-from cwrap import create_cpath
-from points import mult_point, add_points, distance, midpoint
+from .bbox import is_bbox_overlap, sum_bbox
+from .bezier_ops import bezier_base_point, get_paths_bbox
+from .cwrap import create_cpath
+from .points import mult_point, add_points, distance, midpoint
 from uc2 import libcairo, sk2const
 
 CAPS = {

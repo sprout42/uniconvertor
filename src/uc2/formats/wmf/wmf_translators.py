@@ -17,7 +17,10 @@
 
 import logging
 from copy import deepcopy
-from cStringIO import StringIO
+try:
+    from cStringIO import StringIO
+except ModuleNotFoundError:
+    from io import StringIO
 
 from uc2 import uc2const, libgeom, libpango, libimg, sk2const, utils
 from uc2.formats.sk2 import sk2_model

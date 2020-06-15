@@ -69,7 +69,7 @@ class SK1Loader(AbstractLoader):
             if self.line:
                 try:
                     code = compile('self.' + self.line, '<string>', 'exec')
-                    exec code
+                    exec(code)
                 except Exception as e:
                     LOG.warn('Parsing error in "%s"', self.line)
                     LOG.warn('Error traceback: %s', e)
@@ -373,10 +373,10 @@ class SK1Loader(AbstractLoader):
 
     def _decode_text(self, text):
         output = ''
-        for word in text.split('\u')[1:]:
+        for word in text.split('\\u')[1:]:
             num = int(word, 16)
             if num > 256:
-                output += ('\u' + word).decode('raw_unicode_escape')
+                output += ('\\u' + word).decode('raw_unicode_escape')
             else:
                 output += chr(int(num)).decode('latin1')
         return output

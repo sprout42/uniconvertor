@@ -175,15 +175,15 @@ def expanduser_unicode(path):
     Fixes expanduser functionality for non-unicode platforms.
     """
     path = os.path.expanduser(path.encode(sys.getfilesystemencoding()))
-    return path.decode(sys.getfilesystemencoding())
+    return path
 
 
 def path_unicode(path):
-    return path.decode(sys.getfilesystemencoding())
+    return path
 
 
 def path_system(path):
-    return path.encode(sys.getfilesystemencoding())
+    return path
 
 
 def get_system_fontdirs():

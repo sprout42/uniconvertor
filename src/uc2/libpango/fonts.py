@@ -19,9 +19,9 @@
 import cgi
 import string
 
-import _libpango
+from . import _libpango
 
-from core import PANGO_LAYOUT
+from .core import PANGO_LAYOUT
 
 FAMILIES_LIST = []
 FAMILIES_DICT = {}

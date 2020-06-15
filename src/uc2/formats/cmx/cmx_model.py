@@ -18,7 +18,10 @@
 import logging
 import struct
 import zlib
-from cStringIO import StringIO
+try:
+    from cStringIO import StringIO
+except ModuleNotFoundError:
+    from io import StringIO
 
 from uc2 import utils
 from uc2.formats.cmx import cmx_const, cmx_instr

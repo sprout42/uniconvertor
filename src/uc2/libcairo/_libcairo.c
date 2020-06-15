@@ -17,11 +17,12 @@
  */
 
 #include <Python.h>
-#include <pycairo.h>
+#define PYCAIRO_NO_IMPORT
+#include <py3cairo.h>
 #include <cairo.h>
 #include "Imaging.h"
 
-static Pycairo_CAPI_t *Pycairo_CAPI;
+//static Pycairo_CAPI_t *Pycairo_CAPI;
 
 /* redefine the ImagingObject struct defined in _imagingmodule.c */
 typedef struct {
@@ -36,7 +37,7 @@ cairo_DrawRectangle (PyObject *self, PyObject *args) {
 	PycairoContext *context;
 	cairo_t *ctx;
 
-	if (!PyArg_ParseTuple(args, "Odddd", &context, &x, &y, &w, &h)) {
+	if (!PyArg_ParseTuple(args, "Odddd:_libcairo.draw_rect", &context, &x, &y, &w, &h)) {
 		return NULL;
 	}
 
@@ -54,7 +55,7 @@ cairo_GetSurfaceFirstPixel (PyObject *self, PyObject *args) {
 	cairo_surface_t *surface;
 	unsigned char* src;
 
-	if (!PyArg_ParseTuple(args, "O", &pysurface)) {
+	if (!PyArg_ParseTuple(args, "O:_libcairo.get_pixel", &pysurface)) {
 		return NULL;
 	}
 
@@ -72,7 +73,7 @@ cairo_ApplyTrafoToPath (PyObject *self, PyObject *args) {
     cairo_path_t *path;
     cairo_path_data_t *data;
 
-	if (!PyArg_ParseTuple(args, "Odddddd",
+	if (!PyArg_ParseTuple(args, "Odddddd:_libcairo.apply_trafo",
 			&pypath, &m11, &m21, &m12, &m22, &dx, &dy)) {
 		return NULL;
 	}
@@ -135,7 +136,7 @@ cairo_GetPDPathFromPath (PyObject *self, PyObject *args) {
     PyObject *pd_point;
     PyObject *pd_subpoint;
 
-	if (!PyArg_ParseTuple(args, "O",
+	if (!PyArg_ParseTuple(args, "O:_libcairo.get_path_from_cpath",
 			&pypath)) {
 		return NULL;
 	}
@@ -165,7 +166,7 @@ cairo_GetPDPathFromPath (PyObject *self, PyObject *args) {
 				PyList_Append(pd_point, PyFloat_FromDouble(x0));
 				PyList_Append(pd_point, PyFloat_FromDouble(y0));
 				PyList_SetItem(pd_path, 0, pd_point);
-				PyList_SetItem(pd_path, 2, PyInt_FromLong(0L));
+				PyList_SetItem(pd_path, 2, PyLong_FromLong(0L));
 				path_counter++;
 				break;
 
@@ -202,12 +203,12 @@ cairo_GetPDPathFromPath (PyObject *self, PyObject *args) {
 				PyList_Append(pd_subpoint, PyFloat_FromDouble(y2));
 				PyList_Append(pd_point, pd_subpoint);
 
-				PyList_Append(pd_point, PyInt_FromLong(0L));
+				PyList_Append(pd_point, PyLong_FromLong(0L));
 				PyList_Append(pd_points, pd_point);
 				break;
 
 			case CAIRO_PATH_CLOSE_PATH:
-				PyList_SetItem(pd_path, 2, PyInt_FromLong(1L));
+				PyList_SetItem(pd_path, 2, PyLong_FromLong(1L));
 				break;
         }
     }
@@ -224,7 +225,7 @@ cairo_ConvertMatrixToTrafo (PyObject *self, PyObject *args) {
 	PycairoMatrix *py_matrix;
 	cairo_matrix_t *matrix;
 
-	if (!PyArg_ParseTuple(args, "O", &py_matrix)) {
+	if (!PyArg_ParseTuple(args, "O:_libcairo.get_trafo", &py_matrix)) {
 		return NULL;
 	}
 
@@ -252,7 +253,7 @@ cairo_DrawRGBImage (PyObject *self, PyObject *args) {
 	unsigned char* rgb;
 	unsigned char *dest;
 
-	if (!PyArg_ParseTuple(args, "OOii", &pysurface, &src, &width, &height)) {
+	if (!PyArg_ParseTuple(args, "OOii:_libcairo.draw_rgb_image", &pysurface, &src, &width, &height)) {
 		return NULL;
 	}
 
@@ -295,7 +296,8 @@ cairo_DrawRGBAImage (PyObject *self, PyObject *args) {
 	unsigned char* rgb;
 	unsigned char *dest;
 
-	if (!PyArg_ParseTuple(args, "OOii", &pysurface, &src, &width, &height)) {
+	if (!PyArg_ParseTuple(args, "OOii:_libcairo.draw_rgba_image",
+                          &pysurface, &src, &width, &height)) {
 		return NULL;
 	}
 
@@ -337,9 +339,24 @@ PyMethodDef cairo_methods[] = {
 	{NULL, NULL}
 };
 
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef cairodef = {
+    PyModuleDef_HEAD_INIT,
+    "_libcairo",         /* m_name */
+    NULL,                /* m_doc */
+    -1,                  /* m_size */
+    cairo_methods,       /* m_methods */
+};
+
+PyMODINIT_FUNC
+PyInit__libcairo(void) {
+    return PyModule_Create(&cairodef);
+}
+#else
 void
 init_libcairo(void)
 {
     Py_InitModule("_libcairo", cairo_methods);
     Pycairo_IMPORT;
 }
+#endif

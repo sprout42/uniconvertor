@@ -44,11 +44,11 @@ def normalize_path(path):
 
 
 def get_sys_path(path):
-    return path if isinstance(path, unicode) else path.decode('utf-8')
+    return path
 
 
 def get_utf8_path(path):
-    return path.encode('utf-8') if isinstance(path, unicode) else path
+    return path
 
 
 def isfile(path):

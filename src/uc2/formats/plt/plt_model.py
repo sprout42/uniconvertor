@@ -167,7 +167,7 @@ class PltJob(PltModelObject):
             cmd = cmd.replace("PD", "[")
             cmd = 'path=[%s]' % cmd
             code = compile(cmd, '<string>', 'exec')
-            exec code
+            exec(code)
             self.cache_path = []
             self.cache_path.append(path[0])
             self.cache_path.append(path[1:])

@@ -20,7 +20,7 @@
 import os
 from PIL import Image
 
-import _cms
+from . import _cms
 
 from uc2 import uc2const
 
@@ -449,7 +449,8 @@ def cms_get_profile_name(profile):
     :param profile: valid lcms profile handle
     :return: profile name string
     """
-    return _cms.getProfileName(profile).strip().decode('cp1252').encode('utf-8')
+    #return _cms.getProfileName(profile).strip().decode('cp1252').encode('utf-8')
+    return _cms.getProfileName(profile).strip()
 
 
 def cms_get_profile_info(profile):
@@ -458,7 +459,8 @@ def cms_get_profile_info(profile):
     :param profile: valid lcms profile handle
     :return: profile description info string
     """
-    return _cms.getProfileInfo(profile).strip().decode('cp1252').encode('utf-8')
+    #return _cms.getProfileInfo(profile).strip().decode('cp1252').encode('utf-8')
+    return _cms.getProfileInfo(profile).strip()
 
 
 def cms_get_profile_copyright(profile):
@@ -467,4 +469,5 @@ def cms_get_profile_copyright(profile):
     :param profile: valid lcms profile handle
     :return: profile copyright info string
     """
-    return _cms.getProfileInfoCopyright(profile).strip().decode('cp1252').encode('utf-8')
+    #return _cms.getProfileInfoCopyright(profile).strip().decode('cp1252').encode('utf-8')
+    return _cms.getProfileInfoCopyright(profile).strip()

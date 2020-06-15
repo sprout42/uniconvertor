@@ -56,7 +56,7 @@ class XARLoader(AbstractLoader):
 
             if rec.cid == xar_const.TAG_STARTCOMPRESSION:
                 rec.update()
-                if rec.compression_type is 0:
+                if rec.compression_type == 0:
                     stream = ZipIO(raw_stream)
                 else:
                     msg = 'Unknown compression type %s' % rec.compression_type

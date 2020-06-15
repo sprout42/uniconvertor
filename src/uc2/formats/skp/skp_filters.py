@@ -41,7 +41,7 @@ class SKP_Loader(AbstractLoader):
             if self.line:
                 try:
                     code = compile('self.' + self.line, '<string>', 'exec')
-                    exec code
+                    exec(code)
 
                 except Exception as e:
                     LOG.error('Parsing error in "%s"', self.line)

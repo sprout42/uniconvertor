@@ -17,7 +17,7 @@
 
 import math
 
-import cwrap
+from . import cwrap
 
 NORMAL_TRAFO = [1.0, 0.0, 0.0, 1.0, 0.0, 0.0]
 

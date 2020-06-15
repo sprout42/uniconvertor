@@ -25,9 +25,10 @@ MODES = ["1", "L", "P", "RGB", "RGBA", "CMYK", "YCbCr", "I", "F"]
 
 FILES = ['type_bilevel.tif', 'type_cmyk.tif',
 	'type_grayscale.tif', 'type_palette.tif',
-	'type_truecolor.tif', 'type_truecolormatte.tif']
+	'type_truecolor.tif', 'type_truecolormatte.tif',
+        'type_palettematte.tif', ]
 
-FILES2 = ['type_cmyka.tif', 'type_palettematte.tif', 'type_lab.tif', ]
+FILES2 = ['type_cmyka.tif', 'type_lab.tif', ]
 
 class TestImageFunctions(unittest.TestCase):
 

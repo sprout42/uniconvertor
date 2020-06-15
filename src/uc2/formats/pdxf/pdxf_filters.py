@@ -163,7 +163,7 @@ class XMLDocReader(handler.ContentHandler):
             for item in attrs._attrs.keys():
                 line = 'self.value=' + attrs._attrs[item]
                 code = compile(line, '<string>', 'exec')
-                exec code
+                exec(code)
                 obj.__dict__[item] = self.value
 
             if self.parent_stack:

@@ -16,7 +16,10 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from PIL import Image
-from cStringIO import StringIO
+try:
+    from cStringIO import StringIO
+except ModuleNotFoundError:
+    from io import StringIO
 from copy import deepcopy
 
 import model

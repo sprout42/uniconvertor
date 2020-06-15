@@ -26,7 +26,7 @@ def probe_number_images():
     filepath = os.path.join(_pkgdir, '3layer.gif')
     wand = _libimg.new_image()
     _libimg.load_image(wand, filepath)
-    print _libimg.get_number_images(wand)
+    print(_libimg.get_number_images(wand))
 
 
 def probe_colorspace():
@@ -40,7 +40,7 @@ def probe_colorspace():
     for path in paths:
         wand = _libimg.new_image()
         _libimg.load_image(wand, path)
-        _libimg.reset_iterator(wand)
+        #_libimg.reset_iterator(wand)
         _libimg.next_image(wand)
         name = path.split('/')[-1]
-        print name, '==>', _libimg.get_colorspace(wand)
+        print(name, '==>', _libimg.get_colorspace(wand))

@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 #
 #   Setup script for UniConvertor 2.x
 #
@@ -52,8 +52,7 @@ if not os.path.exists('./utils'):
     else:
         if not os.path.exists('./subproj/build-utils/src/utils'):
             os.makedirs('./subproj')
-            os.system('cd subproj && git clone '
-                      'https://github.com/sk1project/build-utils && cd ..')
+            os.system('cd subproj && git clone -b python3 https://github.com/sprout42/build-utils && cd ..')
         os.system('ln -s ./subproj/build-utils/src/utils utils')
     CLEAR_UTILS = True
 
@@ -155,8 +154,11 @@ LONG_DEB_DESCRIPTION = ''' UniConvertor is a multiplatform universal vector grap
 ############################################################
 # Build data
 ############################################################
-install_path = '/usr/lib/%s-%s' % (NAME, VERSION)
+prefix = '%s/.local' % os.environ["HOME"] 
+install_path = '%s/lib/%s-%s' % (prefix, NAME, VERSION)
 os.environ["APP_INSTALL_PATH"] = "%s" % (install_path,)
+bin_path = "%s/bin" % (prefix,)
+os.environ["APP_SCRIPT_INSTALL_PATH"] = bin_path
 src_path = 'src'
 include_path = '/usr/include'
 modules = []
@@ -179,12 +181,14 @@ dst_script = 'src/script/uniconvertor'
 fileptr = open(src_script, 'rb')
 fileptr2 = open(dst_script, 'wb')
 while True:
-    line = fileptr.readline()
+    line = fileptr.readline().decode('latin-1')
     if line == '':
         break
     if '$APP_INSTALL_PATH' in line:
         line = line.replace('$APP_INSTALL_PATH', install_path)
-    fileptr2.write(line)
+    if '$APP_SCRIPT_INSTALL_PATH' in line:
+        line = line.replace('$APP_SCRIPT_INSTALL_PATH', bin_path)
+    fileptr2.write(line.encode())
 fileptr.close()
 fileptr2.close()
 shutil.copy(dst_script, 'src/script/uc2')
@@ -225,8 +229,9 @@ if len(sys.argv) > 1:
             # removing scripts
             for item in scripts:
                 filename = os.path.basename(item)
-                print('REMOVE: /usr/bin/' + filename)
-                os.system('rm -rf /usr/bin/' + filename)
+                bin_path = '%s/usr/bin/' % prefix
+                print('REMOVE: ' + bin_path + filename)
+                os.system('rm -rf ' + bin_path + filename)
             # removing data files
             for item in data_files:
                 location = item[0]

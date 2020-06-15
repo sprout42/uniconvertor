@@ -17,8 +17,8 @@
 
 from copy import deepcopy
 
-from points import add_points, mult_point, get_point_angle
-from trafo import apply_trafo_to_paths, NORMAL_TRAFO
+from .points import add_points, mult_point, get_point_angle
+from .trafo import apply_trafo_to_paths, NORMAL_TRAFO
 
 
 # ------------- Flattering -------------

@@ -17,7 +17,7 @@
 
 import math
 
-from trafo import apply_trafo_to_point
+from .trafo import apply_trafo_to_point
 
 
 # ------------- Point operations -------------

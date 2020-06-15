@@ -1,6 +1,6 @@
-/* libimg - small module which provides binding to ImageMagick.
+/* libimg - small module which provides binding to GraphicsMagick.
  *
- * Copyright (C) 2011-2012 by Ihor E.Novikov
+ * Copyright (C) 2018 by Ihor E.Novikov
  *
  * 	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU Affero General Public License
@@ -17,12 +17,47 @@
  */
 
 #include <Python.h>
-#include <wand/MagickWand.h>
+#include <wand/wand_api.h>
+
+static char* imgtype_to_str(ImageType img_type) {
+	if (img_type == BilevelType){
+		return "BilevelType";
+	}
+	else if (img_type == GrayscaleType){
+		return "GrayscaleType";
+	}
+	else if (img_type == PaletteType){
+		return "PaletteType";
+	}
+	else if (img_type == PaletteMatteType){
+		return "PaletteMatteType";
+	}
+	else if (img_type == TrueColorType){
+		return "TrueColorType";
+	}
+	else if (img_type == TrueColorMatteType){
+		return "TrueColorMatteType";
+	}
+	else if (img_type == ColorSeparationType){
+		return "ColorSeparationType";
+	}
+	else if (img_type == ColorSeparationMatteType){
+		return "ColorSeparationMatteType";
+	}
+	else if (img_type == OptimizeType){
+		return "OptimizeType";
+	}
+	else {
+		return "UndefinedType";
+	}
+}
+
 
 static PyObject *
 im_InitMagick(PyObject *self, PyObject *args) {
 
-	MagickWandGenesis();
+    //MagickWandGenesis();
+	InitializeMagick(NULL);
 
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -31,22 +66,24 @@ im_InitMagick(PyObject *self, PyObject *args) {
 static PyObject *
 im_TerminateMagick(PyObject *self, PyObject *args) {
 
-	MagickWandTerminus();
+    //MagickWandTerminus();
+    DestroyMagick();
 
 	Py_INCREF(Py_None);
 	return Py_None;
 }
 
 static void im_FreeMagickWand(PyObject *obj) {
-    MagickBooleanType status;
+    //MagickBooleanType status;
     MagickWand *magick_wand = (MagickWand*) PyCapsule_GetPointer(obj, "MagickWand");
 
     // In some cases python may uninitialize Magick before the wands are 
     // cleared, in that case don't destroy the wands, they are already gone.
-    status = IsMagickWandInstantiated();
+    //status = IsMagickWandInstantiated();
 
-    if ((MagickTrue == status) && (NULL != magick_wand)) {
-        ClearMagickWand(magick_wand);
+    //if ((MagickTrue == status) && (NULL != magick_wand)) {
+    if (NULL != magick_wand) {
+        //ClearMagickWand(magick_wand);
         DestroyMagickWand(magick_wand);
     }
 }
@@ -70,7 +107,9 @@ im_LoadImage(PyObject *self, PyObject *args) {
 	PyObject *magick_pointer;
 	MagickWand *magick_wand;
 	char *filepath = NULL;
-	MagickBooleanType status;
+	ImageType img_type;
+    //MagickBooleanType status;
+	MagickPassFail status;
 
 	if (!PyArg_ParseTuple(args, "Os:_libimg.load_image", &magick_pointer, &filepath)){
 		return Py_BuildValue("i", 0);
@@ -79,7 +118,12 @@ im_LoadImage(PyObject *self, PyObject *args) {
 	magick_wand = (MagickWand *) PyCapsule_GetPointer(magick_pointer, "MagickWand");
 	status = MagickReadImage(magick_wand, filepath);
 
-	if (status == MagickFalse){
+	img_type = MagickGetImageType(magick_wand);
+	printf("\n%s:\n%s (%d)\n", filepath, imgtype_to_str(img_type), img_type);
+	img_type = MagickGetImageSavedType(magick_wand);
+	printf("%s (%d)\n", imgtype_to_str(img_type), img_type);
+
+	if (status == MagickFail){
 		return Py_BuildValue("i", 0);
 	}
 
@@ -92,8 +136,9 @@ im_LoadImageBlob(PyObject *self, PyObject *args) {
 	PyObject *magick_pointer;
 	MagickWand *magick_wand;
 	Py_ssize_t size;
-	char *blob;
-	MagickBooleanType status;
+	const unsigned char *blob;
+    //MagickBooleanType status;
+	MagickPassFail status;
 
 	if (!PyArg_ParseTuple(args, "Oy#:_libimg.load_image_blob", &magick_pointer, &blob, &size)){
 		return Py_BuildValue("i", 0);
@@ -103,7 +148,7 @@ im_LoadImageBlob(PyObject *self, PyObject *args) {
 
 	status = MagickReadImageBlob(magick_wand, blob, (size_t)size);
 
-	if (status == MagickFalse){
+	if (status == MagickFail){
 		return Py_BuildValue("i", 0);
 	}
 
@@ -124,10 +169,11 @@ im_MergeLayers(PyObject *self, PyObject *args) {
 	}
 
 	magick_wand = (MagickWand *) PyCapsule_GetPointer(magick_pointer, "MagickWand");
-    //MagickResetIterator(magick_wand);
-    MagickSetFirstIterator(magick_wand);
+    MagickResetIterator(magick_wand);
+    //MagickSetFirstIterator(magick_wand);
 
-    merged = MagickMergeImageLayers(magick_wand, MergeLayer);
+    //merged = MagickMergeImageLayers(magick_wand, MergeLayer);
+    merged = MagickFlattenImages(magick_wand);
     capsule = PyCapsule_New((void*) merged, "MagickWand", im_FreeMagickWand);
     //capsule = PyCapsule_New((void*) merged, "MagickWand", NULL);
 	return capsule;
@@ -139,16 +185,17 @@ im_WriteImage(PyObject *self, PyObject *args) {
 	PyObject *magick_pointer;
 	MagickWand *magick_wand;
 	char *filepath = NULL;
-	MagickBooleanType status;
+    //MagickBooleanType status;
+	MagickPassFail status;
 
 	if (!PyArg_ParseTuple(args, "Os:_libimg.write_image", &magick_pointer, &filepath)){
 		return Py_BuildValue("i", 0);
 	}
 
 	magick_wand = (MagickWand *) PyCapsule_GetPointer(magick_pointer, "MagickWand");
-	status = MagickWriteImages(magick_wand, filepath, MagickTrue);
+	status = MagickWriteImages(magick_wand, filepath, 1);
 
-	if (status == MagickFalse){
+	if (status == MagickFail){
 		return Py_BuildValue("i", 0);
 	}
 
@@ -157,7 +204,7 @@ im_WriteImage(PyObject *self, PyObject *args) {
 
 static PyObject *
 im_GetImageBlob(PyObject *self, PyObject *args) {
-
+//
 	PyObject *magick_pointer;
 	MagickWand *magick_wand;
 	unsigned char *blob;
@@ -204,8 +251,8 @@ im_ResetIterator(PyObject *self, PyObject *args) {
 	}
 
 	magick_wand = (MagickWand *) PyCapsule_GetPointer(magick_pointer, "MagickWand");
-    //MagickResetIterator(magick_wand);
-    MagickSetFirstIterator(magick_wand);
+    MagickResetIterator(magick_wand);
+    //MagickSetFirstIterator(magick_wand);
 
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -216,7 +263,8 @@ im_NextImage(PyObject *self, PyObject *args) {
 
 	PyObject *magick_pointer;
 	MagickWand *magick_wand;
-	MagickBooleanType status;
+    //MagickBooleanType status;
+	MagickPassFail status;
 
 	if (!PyArg_ParseTuple(args, "O:_libimg.next_image", &magick_pointer)){
 		Py_INCREF(Py_None);
@@ -226,7 +274,7 @@ im_NextImage(PyObject *self, PyObject *args) {
 	magick_wand = (MagickWand *) PyCapsule_GetPointer(magick_pointer, "MagickWand");
 	status = MagickNextImage(magick_wand);
 
-	if (status == MagickFalse){
+	if (status == MagickFail){
 		return Py_BuildValue("i", 0);
 	}
 
@@ -234,20 +282,20 @@ im_NextImage(PyObject *self, PyObject *args) {
 }
 
 
-// Image types from magick/image.h
+// Image types from MagickCore/image.h
 //
-//	  UndefinedType,
-//	  BilevelType,
-//	  GrayscaleType,
-//	  GrayscaleMatteType,
-//	  PaletteType,
-//	  PaletteMatteType,
-//	  TrueColorType,
-//	  TrueColorMatteType,
-//	  ColorSeparationType,
-//	  ColorSeparationMatteType,
-//	  OptimizeType,
-//	  PaletteBilevelMatteType
+//   UndefinedType,
+//   BilevelType,
+//   GrayscaleType,
+//   GrayscaleAlphaType,
+//   PaletteType,
+//   PaletteAlphaType,
+//   TrueColorType,
+//   TrueColorAlphaType,
+//   ColorSeparationType,
+//   ColorSeparationAlphaType,
+//   OptimizeType,
+//   PaletteBilevelAlphaType
 
 static PyObject *
 im_GetImageType(PyObject *self, PyObject *args) {
@@ -263,70 +311,45 @@ im_GetImageType(PyObject *self, PyObject *args) {
 
 	magick_wand = (MagickWand *) PyCapsule_GetPointer(magick_pointer, "MagickWand");
 	img_type = MagickGetImageType(magick_wand);
-
-	if (img_type == BilevelType){
-		return Py_BuildValue("s", "BilevelType");
-	}
-	else if (img_type == GrayscaleType){
-		return Py_BuildValue("s", "GrayscaleType");
-	}
-	else if (img_type == GrayscaleMatteType){
-		return Py_BuildValue("s", "GrayscaleMatteType");
-	}
-	else if (img_type == PaletteType){
-		return Py_BuildValue("s", "PaletteType");
-	}
-	else if (img_type == PaletteMatteType){
-		return Py_BuildValue("s", "PaletteMatteType");
-	}
-	else if (img_type == TrueColorType){
-		return Py_BuildValue("s", "TrueColorType");
-	}
-	else if (img_type == TrueColorMatteType){
-		return Py_BuildValue("s", "TrueColorMatteType");
-	}
-	else if (img_type == ColorSeparationType){
-		return Py_BuildValue("s", "ColorSeparationType");
-	}
-	else if (img_type == ColorSeparationMatteType){
-		return Py_BuildValue("s", "ColorSeparationMatteType");
-	}
-	else if (img_type == OptimizeType){
-		return Py_BuildValue("s", "OptimizeType");
-	}
-	else if (img_type == PaletteBilevelMatteType){
-		return Py_BuildValue("s", "PaletteBilevelMatteType");
-	}
-	else {
-		return Py_BuildValue("s", "UndefinedType");
-	}
+	return Py_BuildValue("s", imgtype_to_str(img_type));
 }
 
 // Colorspace types from magick/colorspace.h
 //
-//UndefinedColorspace,
-//RGBColorspace,
-//GRAYColorspace,
-//TransparentColorspace,
-//OHTAColorspace,
-//LabColorspace,
-//XYZColorspace,
-//YCbCrColorspace,
-//YCCColorspace,
-//YIQColorspace,
-//YPbPrColorspace,
-//YUVColorspace,
-//CMYKColorspace,
-//sRGBColorspace,
-//HSBColorspace,
-//HSLColorspace,
-//HWBColorspace,
-//Rec601LumaColorspace,
-//Rec601YCbCrColorspace,
-//Rec709LumaColorspace,
-//Rec709YCbCrColorspace,
-//LogColorspace,
-//CMYColorspace
+// UndefinedColorspace
+// CMYColorspace
+// CMYKColorspace
+// GRAYColorspace
+// HCLColorspace
+// HCLpColorspace
+// HSBColorspace
+// HSIColorspace
+// HSLColorspace
+// HSVColorspace
+// HWBColorspace
+// LabColorspace
+// LCHColorspace
+// LCHabColorspace
+// LCHuvColorspace
+// LogColorspace
+// LMSColorspace
+// LuvColorspace
+// OHTAColorspace
+// Rec601YCbCrColorspace
+// Rec709YCbCrColorspace
+// RGBColorspace
+// scRGBColorspace
+// sRGBColorspace
+// TransparentColorspace
+// xyYColorspace
+// XYZColorspace
+// YCbCrColorspace
+// YCCColorspace
+// YDbDrColorspace
+// YIQColorspace
+// YPbPrColorspace
+// YUVColorspace
+// LinearGRAYColorspace
 
 static PyObject *
 im_GetColorspace(PyObject *self, PyObject *args) {
@@ -355,7 +378,7 @@ im_GetColorspace(PyObject *self, PyObject *args) {
 	else if (cs == OHTAColorspace){
 		return Py_BuildValue("s", "OHTAColorspace");
 	}
-	else if (cs == LabColorspace){
+	else if (cs == LABColorspace){
 		return Py_BuildValue("s", "LabColorspace");
 	}
 	else if (cs == XYZColorspace){
@@ -382,23 +405,17 @@ im_GetColorspace(PyObject *self, PyObject *args) {
 	else if (cs == sRGBColorspace){
 		return Py_BuildValue("s", "sRGBColorspace");
 	}
-	else if (cs == HSBColorspace){
-		return Py_BuildValue("s", "HSBColorspace");
-	}
+    //else if (cs == HSBColorspace){
+	//	return Py_BuildValue("s", "HSBColorspace");
+	//}
 	else if (cs == HSLColorspace){
 		return Py_BuildValue("s", "HSLColorspace");
 	}
 	else if (cs == HWBColorspace){
 		return Py_BuildValue("s", "HWBColorspace");
 	}
-	else if (cs == Rec601LumaColorspace){
-		return Py_BuildValue("s", "Rec601LumaColorspace");
-	}
 	else if (cs == Rec601YCbCrColorspace){
 		return Py_BuildValue("s", "Rec601YCbCrColorspace");
-	}
-	else if (cs == Rec709LumaColorspace){
-		return Py_BuildValue("s", "Rec709LumaColorspace");
 	}
 	else if (cs == Rec709YCbCrColorspace){
 		return Py_BuildValue("s", "Rec709YCbCrColorspace");
@@ -406,9 +423,9 @@ im_GetColorspace(PyObject *self, PyObject *args) {
 	else if (cs == LogColorspace){
 		return Py_BuildValue("s", "LogColorspace");
 	}
-	else if (cs == CMYColorspace){
-		return Py_BuildValue("s", "CMYColorspace");
-	}
+    //else if (cs == CMYColorspace){
+	//	return Py_BuildValue("s", "CMYColorspace");
+	//}
 	else {
 		return Py_BuildValue("s", "UndefinedColorspace");
 	}
@@ -441,7 +458,8 @@ im_SetImageFormat(PyObject *self, PyObject *args) {
 	PyObject *magick_pointer;
 	MagickWand *magick_wand;
 	char *format = NULL;
-	MagickBooleanType status;
+    //MagickBooleanType status;
+	MagickPassFail status;
 
 	if (!PyArg_ParseTuple(args, "Os:_libimg.set_image_format", &magick_pointer, &format)){
 		return Py_BuildValue("i", 0);
@@ -450,7 +468,7 @@ im_SetImageFormat(PyObject *self, PyObject *args) {
 	magick_wand = (MagickWand *) PyCapsule_GetPointer(magick_pointer, "MagickWand");
 	status = MagickSetImageFormat(magick_wand, format);
 
-	if (status == MagickFalse){
+	if (status == MagickFail){
 		return Py_BuildValue("i", 0);
 	}
 
@@ -515,7 +533,7 @@ im_SetImageType(PyObject *self, PyObject *args) {
 static PyObject *
 im_RemoveAlpaChannel(PyObject *self, PyObject *args) {
 
-	void *magick_pointer;
+	PyObject *magick_pointer;
 	MagickWand *magick_wand;
 
 	if (!PyArg_ParseTuple(args, "O:_libimg.remove_alpha_channel", &magick_pointer)){

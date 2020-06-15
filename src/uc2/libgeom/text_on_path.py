@@ -17,10 +17,10 @@
 
 import math
 
-from points import distance, midpoint, get_point_angle
-from trafo import apply_trafo_to_paths
-from flattering import flat_path
-from bezier_ops import reverse_path, get_path_length
+from .points import distance, midpoint, get_point_angle
+from .trafo import apply_trafo_to_paths
+from .flattering import flat_path
+from .bezier_ops import reverse_path, get_path_length
 
 TEXT_ALIGN_LEFT = 0
 TEXT_ALIGN_CENTER = 1

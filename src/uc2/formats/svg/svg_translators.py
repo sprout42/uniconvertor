@@ -18,7 +18,10 @@
 import logging
 import os
 from base64 import b64decode, b64encode
-from cStringIO import StringIO
+try:
+    from cStringIO import StringIO
+except ModuleNotFoundError:
+    from io import StringIO
 from copy import deepcopy
 
 from PIL import Image
@@ -386,7 +389,7 @@ class SVG_to_SK2_Translator(object):
                 try:
                     code = compile('dash=[' + style['stroke-dasharray'] + ']',
                                    '<string>', 'exec')
-                    exec code
+                    exec(code)
                 except Exception:
                     dash = []
             if dash:

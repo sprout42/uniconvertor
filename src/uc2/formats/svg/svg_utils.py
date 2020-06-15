@@ -75,7 +75,7 @@ def get_svg_trafo(strafo):
         tr = tr.replace(', ', ',').replace(' ', ',').replace('))', ')')
         try:
             code = compile('tr=trafo_' + tr, '<string>', 'exec')
-            exec code
+            exec(code)
         except:
             continue
         trafo = libgeom.multiply_trafo(trafo, tr)

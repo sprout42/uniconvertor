@@ -15,12 +15,12 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import _libpango
+from . import _libpango
 import cairo
 import os
 from copy import deepcopy
 
-from markup import apply_markup, apply_glyph_markup
+from .markup import apply_markup, apply_glyph_markup
 
 PANGO_UNITS = 1024
 
@@ -30,7 +30,7 @@ DIRECT_MATRIX = cairo.Matrix()
 
 PANGO_MATRIX = cairo.Matrix(1.0, 0.0, 0.0, -1.0, 0.0, 0.0)
 PANGO_LAYOUT = _libpango.create_layout(CTX)
-NONPRINTING_CHARS = ' \n\t '.decode('utf-8')
+NONPRINTING_CHARS = ' \n\t '
 
 
 def get_version():

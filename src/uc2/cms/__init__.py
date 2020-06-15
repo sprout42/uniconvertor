@@ -18,7 +18,7 @@
 import copy
 from copy import deepcopy
 
-import libcms
+from . import libcms
 
 from uc2 import uc2const
 from uc2.uc2const import COLOR_RGB, COLOR_CMYK, COLOR_LAB, COLOR_GRAY, \
@@ -312,7 +312,6 @@ def do_simple_transform(color, cs_in, cs_out):
         elif cs_out == COLOR_GRAY:
             return rgb_to_gray(lab_to_rgb(color))
 
-
 def colorb(color=None, cmyk=False):
     """
     Emulates COLORB object from python-lcms.
@@ -343,6 +342,7 @@ def colorb(color=None, cmyk=False):
         result += [0]
     return result
 
+libcms.COLORB = colorb
 
 def decode_colorb(colorb, color_type):
     """

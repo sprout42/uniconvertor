@@ -186,7 +186,7 @@ class ModelPresenter(object):
             self.send_info(_('Saving is started...'))
             self.saver.save(self, filename, fileptr)
         except Exception as e:
-            msg = _('Error while saving') + ' ' + filename + ' %s'
+            msg = _('Error while saving') + ' ' + filename
             LOG.error(msg)
             LOG.exception(e)
             raise

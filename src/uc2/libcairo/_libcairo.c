@@ -17,7 +17,7 @@
  */
 
 #include <Python.h>
-#define PYCAIRO_NO_IMPORT
+//#define PYCAIRO_NO_IMPORT
 #include <py3cairo.h>
 #include <cairo.h>
 #include "Imaging.h"

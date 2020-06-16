@@ -188,7 +188,6 @@ class ModelPresenter(object):
         except Exception as e:
             msg = _('Error while saving') + ' ' + filename
             LOG.error(msg)
-            LOG.exception(e)
             raise
 
         model_name = uc2const.FORMAT_NAMES[self.cid]

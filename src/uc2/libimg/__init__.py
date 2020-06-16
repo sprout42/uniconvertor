@@ -19,9 +19,12 @@ import cairo
 import logging
 from base64 import b64encode
 try:
+    # python2
     from cStringIO import StringIO
+    StreamIO = StringIO
 except ModuleNotFoundError:
-    from io import StringIO
+    from io import BytesIO
+    StreamIO = BytesIO
 
 from PIL import Image
 
@@ -86,14 +89,13 @@ def generate_preview(presenter, renderer_cls, size=(100, 100),
         for item in layers:
             rend.render(ctx, item.childs)
     # ---rendering
-    image_stream = StringIO()
+    image_stream = StreamIO()
     surface.write_to_png(image_stream)
 
     if not img_format == 'PNG':
         image_stream.seek(0, 0)
         image = Image.open(image_stream)
         image.load()
-        image_stream = StringIO()
         image.save(image_stream, format=img_format)
 
     image_str = image_stream.getvalue()

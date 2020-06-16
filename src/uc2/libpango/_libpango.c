@@ -20,7 +20,7 @@
 #include <pango/pango.h>
 #include <pango/pangocairo.h>
 #include <cairo.h>
-#define PYCAIRO_NO_IMPORT
+//#define PYCAIRO_NO_IMPORT
 #include <py3cairo.h>
 
 //static Pycairo_CAPI_t *Pycairo_CAPI;

@@ -235,12 +235,9 @@ class AbstractSaver(object):
 
     def field_to_str(self, val):
         val_str = val.__str__()
-        if isinstance(val, str):
-            val_str = val_str.replace("\n", " ").replace("\r", " ")
-            val_str = "'%s'" % val_str.replace("'", "\\'")
-        elif isinstance(val, bytes):
-            val_str = val_str.replace(b"\n", b" ").replace(b"\r", b" ")
-            val_str = b"'%s'" % val_str.replace(b"'", b"\\'")
+        #if isinstance(val, str):
+        val_str = val_str.replace("\n", " ").replace("\r", " ")
+        val_str = "'%s'" % val_str.replace("'", "\\'")
         return val_str
 
     def send_progress_message(self, msg, val):

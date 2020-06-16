@@ -112,8 +112,9 @@ ID_TO_CLS = {
 
 
 def padding(params):
-    sz = len(params)
-    return params + '\x00' if sz > (sz // 2) * 2 else params
+    #sz = len(params)
+    #return params + '\x00' if sz > (sz // 2) * 2 else params
+    return params
 
 
 def element_factory(header, params):
